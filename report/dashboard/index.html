@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>서울 소비 잠재력 대시보드</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap top-inner">
+    <div>
+      <p class="eyebrow">머신러닝 예측 &amp; 갭 분석 · 서울 25개 자치구 / 425개 행정동 · 2023Q1–2025Q4</p>
+      <h1>인구·인프라로 본 ‘기대 소비’와 숨은 상권</h1>
+    </div>
+    <button id="themeBtn" class="ghost" type="button" aria-label="화면 테마 전환">🌓 테마</button>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- 쉽게 읽는 법 -->
+  <section class="card explain">
+    <h2>이 대시보드 읽는 법</h2>
+    <ol class="steps">
+      <li><b>① 기대 소비 예측</b><span>동네마다 사는 사람·일하는 사람·지나가는 사람 수와 가게·지하철역·아파트 같은 시설 수를 보고, 컴퓨터가 “이 정도 조건이면 분기마다 얼마쯤 쓰이겠다”를 계산합니다.</span></li>
+      <li><b>② 실제와 비교</b><span>실제로 쓰인 돈 ÷ 기대한 돈 = <b>배율</b>. ×1이면 딱 예상대로, ×2면 예상의 두 배, ×0.5면 절반입니다.</span></li>
+      <li><b>③ 동네 분류</b><span><em class="tag over">초과달성</em> ×1.5 이상 · <em class="tag normal">기대수준</em> · <em class="tag under">저평가</em> ×0.67 이하. 기대보다 덜 쓰지만(×1 미만) 그 격차가 해마다 줄어드는 곳이 <em class="tag rise">떠오르는 잠재상권</em>입니다.</span></li>
+    </ol>
+  </section>
+
+  <!-- KPI -->
+  <section class="kpis" id="kpis"></section>
+
+  <!-- 필터 -->
+  <section class="filters card" aria-label="필터">
+    <label>자치구
+      <select id="guSel"><option value="">서울 전체 (25개 구)</option></select>
+    </label>
+    <div class="chips" id="typeChips" role="group" aria-label="유형 필터"></div>
+    <label class="search">행정동 검색
+      <input id="search" type="search" placeholder="예: 성수, 여의동">
+    </label>
+    <button id="resetBtn" class="ghost" type="button">초기화</button>
+  </section>
+
+  <!-- 지도 + 상세 -->
+  <section class="grid g-map">
+    <div class="card">
+      <div class="card-h">
+        <h2>소비 잠재력 지도</h2>
+        <p>점 하나 = 행정동 · 색 = 기대 대비 실제(빨강 많이 씀 / 파랑 적게 씀) · 크기 = 실제 소비 규모 · 점을 누르면 오른쪽에 상세</p>
+      </div>
+      <div id="map" class="plot tall"></div>
+    </div>
+    <div class="card detail" id="detail">
+      <div class="card-h">
+        <h2 id="dName">행정동을 선택하세요</h2>
+        <p id="dSub">지도·표·순위 막대에서 동을 누르면 12분기 추이가 나타납니다.</p>
+      </div>
+      <div id="dStats" class="stats"></div>
+      <div id="dLine" class="plot"></div>
+      <p id="dNote" class="note"></p>
+    </div>
+  </section>
+
+  <!-- Top / Bottom -->
+  <section class="grid g2">
+    <div class="card">
+      <div class="card-h"><h2>초과달성 Top 10</h2><p>인구·인프라에 비해 소비가 몰리는 곳 (실제 ÷ 기대)</p></div>
+      <div id="topOver" class="plot"></div>
+    </div>
+    <div class="card">
+      <div class="card-h"><h2>저평가 Top 10</h2><p>조건에 비해 소비가 덜 일어나는 곳</p></div>
+      <div id="topUnder" class="plot"></div>
+    </div>
+  </section>
+
+  <!-- 자치구 -->
+  <section class="grid g2">
+    <div class="card">
+      <div class="card-h"><h2>자치구별 평균 배율</h2><p>소속 행정동들의 평균 · 막대를 누르면 그 구로 필터</p></div>
+      <div id="guBar" class="plot tall"></div>
+    </div>
+    <div class="card">
+      <div class="card-h"><h2>자치구별 유형 구성</h2><p>각 구의 행정동이 어떤 유형으로 나뉘는지 (개수)</p></div>
+      <div id="guStack" class="plot tall"></div>
+    </div>
+  </section>
+
+  <!-- 사분면 + 모델 -->
+  <section class="grid g2">
+    <div class="card">
+      <div class="card-h"><h2>수준 × 추세 사분면</h2><p>가로 = 지금 얼마나 기대보다 쓰나 · 세로 = 격차가 해마다 어느 쪽으로 움직이나</p></div>
+      <div id="quad" class="plot tall"></div>
+    </div>
+    <div class="card">
+      <div class="card-h"><h2>무엇이 기대 소비를 결정하나</h2><p>변수를 무작위로 섞었을 때 설명력이 떨어지는 폭 (클수록 중요)</p></div>
+      <div id="imp" class="plot tall"></div>
+      <div id="perf" class="perf"></div>
+    </div>
+  </section>
+
+  <!-- 계층 표 -->
+  <section class="card">
+    <div class="card-h">
+      <h2>자치구 → 행정동 상세 표</h2>
+      <p>자치구 줄을 누르면 소속 행정동이 펼쳐집니다 · 열 제목을 누르면 정렬 · 금액은 분기 평균(억 원)</p>
+    </div>
+    <div class="table-tools">
+      <button id="expandAll" class="ghost" type="button">모두 펼치기</button>
+      <button id="collapseAll" class="ghost" type="button">모두 접기</button>
+    </div>
+    <div class="table-wrap">
+      <table id="tbl">
+        <thead><tr>
+          <th data-k="name">자치구 / 행정동</th>
+          <th data-k="actual" class="num">실제 소비</th>
+          <th data-k="expected" class="num">기대 소비</th>
+          <th data-k="ratio" class="num">배율</th>
+          <th data-k="trend" class="num">연간 추세</th>
+          <th data-k="type">유형</th>
+          <th data-k="quad">사분면</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 해석 -->
+  <section class="grid g2">
+    <div class="card prose">
+      <h2>핵심 해석</h2>
+      <ol>
+        <li><b>소비는 ‘사는 사람’보다 ‘모이는 곳’을 따라간다.</b> 상주인구와 소비의 상관은 0.17에 그치지만 집객시설 수는 0.69, 직장인구는 0.62입니다. 서울의 소비 지도는 주거지도가 아니라 상권·업무지구 지도에 가깝습니다.</li>
+        <li><b>주말형 동네는 기대보다 덜 쓴다.</b> 다른 조건이 같다면 유동인구 중 주말 비중이 높을수록 소비가 낮게 예측됩니다. 평일 직장인 소비가 서울 상권의 기본 체력이라는 뜻입니다.</li>
+        <li><b>극단적 초과달성은 ‘대형 점포 효과’일 가능성이 크다.</b> 소공동·회현동 같은 도심 대형 상권이나 구로3동·역삼2동처럼 분기 수천억~조 단위 매출이 한 동에 몰린 곳은 지역 활력이라기보다 대형 가맹점이 그 주소로 집계된 결과로 보는 게 안전합니다.</li>
+        <li><b>저평가 상위권 일부는 ‘옆 동에 매출을 빼앗긴’ 착시다.</b> 명동은 바로 옆 소공동이, 여의동은 조건 대비 소비가 다른 동으로 흩어진 것으로 보입니다. 인접 동과 묶어서 보는 것이 좋습니다.</li>
+        <li><b>진짜 탐색 대상은 ‘떠오르는 잠재상권’ 39곳.</b> 아직 기대보다 덜 쓰지만 격차가 해마다 줄고 있어, 인구·인프라가 받쳐 주는 만큼 소비가 따라오는 중인 동네입니다(예: 성수1가2동·성수2가3동, 망우3동, 광장동).</li>
+        <li><b>구 단위로는 마포·양천·구로가 기대 이상, 금천·성북·강북이 기대 이하.</b> 다만 구 평균은 소속 동들의 편차를 가리므로 표에서 동 단위로 확인하세요.</li>
+      </ol>
+    </div>
+    <div class="card prose caution">
+      <h2>읽을 때 주의할 점</h2>
+      <ul>
+        <li><b>‘지출 총금액’은 결제가 일어난 가게 주소 기준</b>입니다. 그 동에 사는 사람의 소비가 아닙니다.</li>
+        <li><b>모델 설명력은 약 63%</b>(한 번도 보지 않은 동을 맞히는 방식으로 검증). 평균 오차는 약 1.6배이므로, 배율 ×0.67~×1.5 구간은 ‘차이 없음’으로 봅니다.</li>
+        <li><b>데이터점검 4곳</b>(아현동·문래동·방이2동·둔촌1동)은 지출이 한 분기에 수 배~수백 배 급변했거나 재건축으로 거의 0이어서 학습에서 뺐고, 순위에서도 제외했습니다. 아현동 감소(2025Q1)와 문래동 급증(2024Q4)이 맞물려 대형 가맹점 소재지 이전이 의심됩니다.</li>
+        <li><b>상주인구는 SKT 통신 기반 인구</b>를 썼습니다. 상권분석 상주인구는 재건축 입주를 늦게 반영하기 때문입니다.</li>
+        <li>잔차는 ‘모델이 설명하지 못한 부분’이라, 상권 매력 외에 <b>데이터 집계 방식·누락 변수(임대료, 업종 구성 등)</b>도 섞여 있습니다. 후보 발굴용으로 쓰고, 현장 확인으로 검증하세요.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer class="foot">
+    데이터: 서울 열린데이터광장 상권분석서비스(소비·상주/직장/길단위인구·집객시설·아파트·영역, 행정동), 서울시×SKT 시민생활 데이터(총인구) ·
+    모델: 선형회귀(Ridge), 행정동 단위 5-겹 교차검증 · 생성 스크립트: <code>Clau_pjt/src</code>
+  </footer>
+</main>
+
+<script src="lib/plotly.min.js"></script>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
