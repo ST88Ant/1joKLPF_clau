@@ -11,25 +11,40 @@
 
 ## 빠른 시작
 
+### 🌐 바로 보기 (설치 필요 없음)
+
+**https://1joklpfclau-hecsqfwbfsrupvrs8tgdml.streamlit.app**
+
+| 바로가기 | 주소 |
+|---|---|
+| 🏠 홈 | <https://1joklpfclau-hecsqfwbfsrupvrs8tgdml.streamlit.app/> |
+| 🗺️ 상권 지도 | <https://1joklpfclau-hecsqfwbfsrupvrs8tgdml.streamlit.app/map> |
+| 🎯 기회 탐색 | <https://1joklpfclau-hecsqfwbfsrupvrs8tgdml.streamlit.app/opportunity> |
+
+> 한동안 접속이 없으면 앱이 잠듭니다. "Yes, get this app back up!" 버튼을 누르면 1분 안에 다시 켜집니다.
+
+### 💻 내 PC에서 실행
+
 ```bash
 pip install -r requirements.txt
 streamlit run app.py
 ```
 
-브라우저에서 <http://localhost:8501> 이 열립니다. 전처리된 Parquet(`data/processed/`)이 저장소에 들어 있어 바로 실행됩니다.
+터미널에 나오는 주소(기본 <http://localhost:8501>)로 접속합니다. 8501 포트를 다른 앱이 쓰고 있으면 `streamlit run app.py --server.port 8502` 처럼 포트를 바꿔 실행하세요.
+전처리된 Parquet(`data/processed/`)이 저장소에 들어 있어 바로 실행됩니다.
 
 ## 페이지 구성
 
 | 메뉴 | 파일 | 내용 | 표 / 그림 |
 |---|---|---|---|
-| 🏠 홈 | `pages/home.py` | 핵심 지표, 메뉴 안내, 주요 발견 | – |
-| 📋 데이터 개요 | `pages/eda_overview.py` | 개요 · 컬럼 사전 · 결측 · 기술통계 · 배율/추세 분포 | 표 1–4 · 그림 1–3 |
-| 📊 분포 분석 | `pages/eda_distribution.py` | 기회 유형 · 금융MBTI · 상권 원형 · 태그 · 업종 공백 | 표 5–8 · 그림 4–10 |
-| 🔗 관계 분석 | `pages/eda_relationship.py` | 교차표 · 상관 행렬 · 추세 산점도 · 수준×추세 사분면 | 표 9–11 · 그림 11–15 |
-| 🏙️ 자치구 비교 | `pages/eda_district.py` | 25개 구 요약 · 배율 · 기회 구성 · 지표 순위 | 표 12 · 그림 16–19 |
-| 🗺️ 상권 지도 | `pages/map.py` | 서울 전체(자치구) ↔ 선택 자치구의 행정동 지도, 클릭하면 요약 | folium |
-| 🎯 기회 탐색 | `pages/opportunity.py` | 선점형·유출보완형 Top 10, 조건 필터, CSV 내려받기 | 표 13–16 |
-| 🔍 행정동 상세 | `pages/dong_detail.py` | 한 동의 키워드 · 업종 · 모델 결과 프로필 | – |
+| [🏠 홈](https://1joklpfclau-hecsqfwbfsrupvrs8tgdml.streamlit.app/) | `pages/home.py` | 핵심 지표, 메뉴 안내, 주요 발견 | – |
+| [📋 데이터 개요](https://1joklpfclau-hecsqfwbfsrupvrs8tgdml.streamlit.app/eda_overview) | `pages/eda_overview.py` | 개요 · 컬럼 사전 · 결측 · 기술통계 · 배율/추세 분포 | 표 1–4 · 그림 1–3 |
+| [📊 분포 분석](https://1joklpfclau-hecsqfwbfsrupvrs8tgdml.streamlit.app/eda_distribution) | `pages/eda_distribution.py` | 기회 유형 · 금융MBTI · 상권 원형 · 태그 · 업종 공백 | 표 5–8 · 그림 4–10 |
+| [🔗 관계 분석](https://1joklpfclau-hecsqfwbfsrupvrs8tgdml.streamlit.app/eda_relationship) | `pages/eda_relationship.py` | 교차표 · 상관 행렬 · 추세 산점도 · 수준×추세 사분면 | 표 9–11 · 그림 11–15 |
+| [🏙️ 자치구 비교](https://1joklpfclau-hecsqfwbfsrupvrs8tgdml.streamlit.app/eda_district) | `pages/eda_district.py` | 25개 구 요약 · 배율 · 기회 구성 · 지표 순위 | 표 12 · 그림 16–19 |
+| [🗺️ 상권 지도](https://1joklpfclau-hecsqfwbfsrupvrs8tgdml.streamlit.app/map) | `pages/map.py` | 서울 전체(자치구) ↔ 선택 자치구의 행정동 지도, 클릭하면 요약 | folium |
+| [🎯 기회 탐색](https://1joklpfclau-hecsqfwbfsrupvrs8tgdml.streamlit.app/opportunity) | `pages/opportunity.py` | 선점형·유출보완형 Top 10, 조건 필터, CSV 내려받기 | 표 13–16 |
+| [🔍 행정동 상세](https://1joklpfclau-hecsqfwbfsrupvrs8tgdml.streamlit.app/dong_detail) | `pages/dong_detail.py` | 한 동의 키워드 · 업종 · 모델 결과 프로필 | – |
 
 ## 폴더 구조
 
@@ -99,7 +114,9 @@ python scripts/build_data.py --offline  # data/cache 에 받아 둔 파일만 �
 
 ## 배포 (Streamlit Community Cloud)
 
-share.streamlit.io → **New app** → 저장소 `ST88Ant/1joKLPF_clau` · 브랜치 `main` · Main file `app.py` → **Deploy**
+배포 주소: **https://1joklpfclau-hecsqfwbfsrupvrs8tgdml.streamlit.app**
+
+`main` 브랜치에 푸시하면 배포된 앱에 자동으로 반영됩니다. 새로 배포할 때는 share.streamlit.io → **Create app** → 저장소 `ST88Ant/1joKLPF_clau` · 브랜치 `main` · Main file `app.py` → **Deploy**
 
 `.gitignore` 가 `__pycache__/`, `data/cache/`(35 MB 경계 원본), `.streamlit/secrets.toml` 을 제외합니다.
 
