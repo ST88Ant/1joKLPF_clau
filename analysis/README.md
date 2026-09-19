@@ -1,3 +1,6 @@
+> 📁 **이 폴더는 분석 자료 보관용입니다.** 저장소 루트에는 Streamlit 대시보드가 있습니다 → [../README.md](../README.md)
+> `src/` 스크립트는 팀 원본 데이터(`T_PJT2/data/raw`)가 있는 로컬 환경 기준 경로라, 저장소만으로는 다시 실행되지 않습니다. 결과물(`report/`, `image/`, `docs/`)은 그대로 볼 수 있습니다.
+
 # 인구·인프라 기반 소비 예측 & ‘소비 잠재력’ 상권 발굴
 
 **“인구와 인프라 대비 실제 소비가 초과 달성되거나, 반대로 저평가된 동네는 어디인가?”**
@@ -10,6 +13,8 @@
 | 인터랙티브 대시보드 (내려받아 `index.html`을 브라우저로 열기, 오프라인 동작) | [`report/dashboard/`](report/dashboard/) |
 | 분석 결과 보고서 (원본) | [`report/분석결과_보고서.md`](report/분석결과_보고서.md) |
 | 분석 방법·데이터 정의 (원본) | [`docs/분석방법_및_데이터정의.md`](docs/분석방법_및_데이터정의.md) |
+| 상권 키워드 분류·타깃 업종·기회 인사이트 (425개 동) | [`report/상권기회_인사이트_보고서.md`](report/상권기회_인사이트_보고서.md) · [PDF](report/상권기회_인사이트_보고서.pdf) |
+| 데이터 사전 — 행정동별 상권 분석 키워드 | [`docs/데이터사전_상권분석_키워드.md`](docs/데이터사전_상권분석_키워드.md) |
 
 ## 폴더 구조
 
@@ -18,11 +23,13 @@
 │  ├─ 01_build_dataset.py    원본 결합 → 분석용 데이터셋 (data/)
 │  ├─ 02_model_residual.py   3개 모델 비교(행정동 단위 교차검증) → 기대 소비·잔차·유형
 │  ├─ 03_visualize.py        정적 차트 13종 → image/
-│  └─ 04_export_dashboard.py 대시보드 데이터(data.js) + plotly.min.js 복사
+│  ├─ 04_export_dashboard.py 대시보드 데이터(data.js) + plotly.min.js 복사
+│  └─ 05_build_opportunity_insight.py  키워드 3축 분류·상권 원형·업종 공백·기회 유형 → data/
 ├─ image/                    PNG 차트 01~13
 ├─ docs/                     분석 방법·데이터 사전
 └─ report/
    ├─ 분석결과_보고서.md
+   ├─ 상권기회_인사이트_보고서.md
    └─ dashboard/             index.html · style.css · app.js · data.js · lib/plotly.min.js
 ```
 
