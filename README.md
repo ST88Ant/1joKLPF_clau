@@ -42,6 +42,7 @@ streamlit run app.py
 | [📊 분포 분석](https://1joklpfclau-hecsqfwbfsrupvrs8tgdml.streamlit.app/eda_distribution) | `pages/eda_distribution.py` | 기회 유형 · 금융MBTI · 상권 원형 · 태그 · 업종 공백 | 표 5–8 · 그림 4–10 |
 | [🔗 관계 분석](https://1joklpfclau-hecsqfwbfsrupvrs8tgdml.streamlit.app/eda_relationship) | `pages/eda_relationship.py` | 교차표 · 상관 행렬 · 추세 산점도 · 수준×추세 사분면 | 표 9–11 · 그림 11–15 |
 | [🏙️ 자치구 비교](https://1joklpfclau-hecsqfwbfsrupvrs8tgdml.streamlit.app/eda_district) | `pages/eda_district.py` | 25개 구 요약 · 배율 · 기회 구성 · 지표 순위 | 표 12 · 그림 16–19 |
+| [🟢 네이버 검색 트렌드](https://1joklpfclau-hecsqfwbfsrupvrs8tgdml.streamlit.app/naver_trend) | `pages/naver_trend.py` | 10대 소비 온·오프라인 동행성 · 시차(선행) 분석 · 25개 구 키워드 사전 | – |
 | [🗺️ 상권 지도](https://1joklpfclau-hecsqfwbfsrupvrs8tgdml.streamlit.app/map) | `pages/map.py` | 서울 전체(자치구) ↔ 선택 자치구의 행정동 지도, 클릭하면 요약 | folium |
 | [🎯 기회 탐색](https://1joklpfclau-hecsqfwbfsrupvrs8tgdml.streamlit.app/opportunity) | `pages/opportunity.py` | 선점형·유출보완형 Top 10, 조건 필터, CSV 내려받기 | 표 13–16 |
 | [🔍 행정동 상세](https://1joklpfclau-hecsqfwbfsrupvrs8tgdml.streamlit.app/dong_detail) | `pages/dong_detail.py` | 한 동의 키워드 · 업종 · 모델 결과 프로필 | – |

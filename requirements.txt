@@ -1,4 +1,5 @@
 streamlit>=1.50
+click>=8.0
 streamlit-folium>=0.22
 folium>=0.17
 branca>=0.7

@@ -19,6 +19,9 @@ pages = {
         st.Page("pages/eda_relationship.py", title="관계 분석", icon="🔗"),
         st.Page("pages/eda_district.py", title="자치구 비교", icon="🏙️"),
     ],
+    "온·오프라인 융합": [
+        st.Page("pages/naver_trend.py", title="네이버 검색 트렌드", icon="🟢"),
+    ],
     "지도 · 탐색": [
         st.Page("pages/map.py", title="상권 지도", icon="🗺️"),
         st.Page("pages/opportunity.py", title="기회 탐색", icon="🎯"),
