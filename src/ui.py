@@ -27,13 +27,18 @@ def figure(no: int, fig, note: str | None = None, summary: str | None = None, de
 
 
 def table(no: int, title: str, df: pd.DataFrame, note: str | None = None, fmt: dict | None = None,
-          height: int | None = None, **kw) -> None:
+          height: int | None = None, summary: str | None = None, details: str | None = None, **kw) -> None:
     st.markdown(f"**표 {no}. {title}**")
     if height:
         kw["height"] = height
     st.dataframe(formatted(df, fmt) if fmt else df, width="stretch", hide_index=True, **kw)
-    if note:
+    if summary:
+        st.info(f"💡 **3초 핵심 요약**: {summary}")
+    elif note:
         st.caption(note)
+    if details:
+        with st.expander("🔍 [상세보기] 쉬운 해설과 표 읽는 법"):
+            st.markdown(details)
 
 
 def formatted(df: pd.DataFrame, fmt: dict) -> pd.DataFrame:

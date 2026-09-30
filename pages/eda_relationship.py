@@ -10,17 +10,29 @@ from src.ui import figure, header, table
 header("🔗 관계 분석", "표 9–11 · 그림 11–15 — 교차표, 상관, 추세와의 관계 (데이터점검 4개 동 제외)")
 
 
-def ct_table(no, row, order, title):
+def ct_table(no, row, order, title, summary=None, details=None):
     ct = D.crosstab(row, "기회_유형")
     ct = ct.reindex(index=[r for r in order if r in ct.index], columns=C.OPP_ORDER, fill_value=0)
     ct["합계"] = ct.sum(axis=1)
-    table(no, title, ct.reset_index())
+    table(no, title, ct.reset_index(), summary=summary, details=details)
 
 
 st.subheader("금융MBTI × 기회 유형")
 a, b = st.columns([1, 1.3])
 with a:
-    ct_table(9, "금융MBTI", C.MBTI_ORDER, "금융MBTI × 기회 유형 (동 수)")
+    ct_table(
+        9, "금융MBTI", C.MBTI_ORDER, "금융MBTI × 기회 유형 (동 수)",
+        summary="주민들의 금융 성향 그룹마다 6가지 상권 기회 유형이 몇 개 동씩 나타나는지 보여주는 교차 집계표입니다.",
+        details="""
+##### 1. 교차표 읽는 법
+* 행(가로): 주민 금융 성향, 열(세로): 상권 기회 유형
+* 가로줄 숫자의 합이 해당 금융 그룹의 전체 동네 수입니다.
+
+##### 2. 핵심 인사이트
+* **영앤레버리지형 88개 동 중 33개 동이 ⑥주의(위축), 18개 동이 ⑤경고(둔화)**입니다. (58%가 침체)
+* **자산안정형 44개 동 중 10개 동이 ①선점형, 9개 동이 ③확장형**입니다. (43%가 성장)
+"""
+    )
 with b:
     figure(
         11, G.heat_pct(D.crosstab("금융MBTI", "기회_유형"), C.MBTI_ORDER, "금융MBTI별 기회 유형 구성 (행 %)"),
@@ -38,7 +50,18 @@ with b:
 st.subheader("상권 원형 × 기회 유형")
 a, b = st.columns([1, 1.3])
 with a:
-    ct_table(10, "상권_원형", C.ARCH_ORDER, "상권 원형 × 기회 유형 (동 수)")
+    ct_table(
+        10, "상권_원형", C.ARCH_ORDER, "상권 원형 × 기회 유형 (동 수)",
+        summary="동네 물리적 성격(상권 원형)마다 6가지 기회 유형이 몇 개 동씩 매핑되는지 보여주는 교차 집계표입니다.",
+        details="""
+##### 1. 가족 아파트단지의 압도적 유출
+* 가족·아파트단지형 110곳 중 무려 **50곳(45.5%)이 ② 유출보완형**입니다.
+* 대단지 아파트가 들어서도 동네 상가가 취약하면 주민들은 주말마다 다른 지역 대형몰로 원정 소비를 떠납니다.
+
+##### 2. 학원가 에듀형의 선점 기회
+* 학원가·에듀형 43개 동 중 9곳이 ① 선점형 기회로 분류되어 학생·학부모 대상 타깃 업종의 성장성이 높습니다.
+"""
+    )
 with b:
     figure(
         12, G.heat_pct(D.crosstab("상권_원형", "기회_유형"), C.ARCH_ORDER, "상권 원형별 기회 유형 구성 (행 %)"),
@@ -69,8 +92,18 @@ with a:
 """
     )
 with b:
-    table(11, "상관이 큰 변수 쌍 Top 12", T.top_pairs(df), fmt={"ρ": "{:+.2f}"},
-          note="직장인구–직주비(0.95), 청년비율–청년인구비율(0.91)은 사실상 같은 정보 — 모델에는 하나만.")
+    table(
+        11, "상관이 큰 변수 쌍 Top 12", T.top_pairs(df), fmt={"ρ": "{:+.2f}"},
+        summary="서로 가장 밀접하게 연결되어 같이 움직이는 변수 쌍 12개를 상관계수(ρ) 순으로 정렬한 표입니다.",
+        details="""
+##### 1. 매우 높은 상관 (0.9 이상)
+* 직장인구 vs 직주비 (0.95), 청년비율 vs 청년인구비율 (0.91)
+* 이 변수들은 사실상 동일한 현실을 측정하므로, 머신러닝 모델 구축 시 하나를 제외해야 다중공선성 문제를 피할 수 있습니다.
+
+##### 2. 유의미한 상관
+* 아파트 시가 vs 고령자 비율, 1인가구 비율 vs 청년 비율 등 서울의 인구통계학적 특성이 잘 드러납니다.
+"""
+    )
 
 st.subheader("무엇이 소비 추세와 함께 움직이나")
 opts = {"청년비율": "청년비율", "청년인구비율": "청년인구비율", "1인가구비율": "1인가구비율",
