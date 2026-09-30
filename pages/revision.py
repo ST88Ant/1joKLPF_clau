@@ -5,21 +5,23 @@
 다른 페이지가 '기회'라고 부르는 값이 실제로 무엇을 재고 있는지 원본 데이터로 되짚는다.
 모든 수치는 data/processed/revision.parquet · revision_stats.json 에서 읽는다
 (만드는 코드: scripts/build_revision.py).
+
+로더·그림 빌더는 새 모듈 src/revision_view.py 에 둔다. config.toml 의 runOnSave=false 때문에
+배포 때 기존 모듈이 다시 읽히지 않아, 공용 모듈에 함수를 더하면 재시작 전까지 AttributeError 가 난다.
 """
 import numpy as np
 import pandas as pd
 import streamlit as st
 
-from src import charts as CH
-from src import data as D
+from src import revision_view as RV
 from src.ui import header, figure, table
 
 header("🛠️ 수정사항 — 결론 재검증",
        "원본 데이터로 다시 확인한 결과, 이 대시보드의 '배율·기회 유형·기회점수'는 상권 잠재력이 아니라 "
        "대형 결제처 소재 여부를 재고 있습니다. 근거와 수정 방향을 정리했습니다.")
 
-rev = D.revision()
-S = D.revision_stats()
+rev = RV.dong()
+S = RV.stats()
 QL = S["분기라벨"]
 
 st.error(
@@ -51,7 +53,7 @@ st.markdown("""
 원본을 네 방향으로 검증했는데 **네 번 모두 그 전제와 어긋납니다.**
 """)
 
-figure(20, CH.bar_cat_share(S["항목구성비"]),
+figure(20, RV.bar_cat_share(S["항목구성비"]),
        summary=f"여가·문화 한 항목이 서울 전체 지출의 {S['항목구성비']['여가_문화']:.0f}%입니다. "
                "실제 가계에서 여가·문화는 10%를 넘기 어렵고, 동네 상권 매출이라면 음식·식료품이 앞서야 합니다.",
        details="""
@@ -63,7 +65,7 @@ figure(20, CH.bar_cat_share(S["항목구성비"]),
 즉 이 숫자는 "이 동네에서 소비가 얼마나 일어났나"가 아니라 **"이 동네에 큰 결제 계정이 있나"** 를 재고 있습니다.
 """)
 
-figure(21, CH.line_concentration(rev["지출_총금액"]),
+figure(21, RV.line_concentration(rev["지출_총금액"]),
        summary=f"상위 3개 동(소공동·구로3동·문래동)이 서울 전체 지출의 {S['집중도']['3']:.0f}%, "
                f"상위 10개 동이 {S['집중도']['10']:.0f}%를 차지합니다.",
        details="""
@@ -94,7 +96,7 @@ table(17, f"지출 상위 12개 동 ({QL}) — 여가·문화 비중이 99%인 �
 원인이 같으면 처리도 같아야 합니다.
 """)
 
-figure(22, CH.hist_percapita(rev["1인당_분기지출_만원"]),
+figure(22, RV.hist_percapita(rev["1인당_분기지출_만원"]),
        summary=f"상주인구 1인당 분기 지출 중앙값이 {S['1인당지출_분위']['50']:.0f}만원(월 7만원)입니다. "
                f"반면 최상위 동은 1인당 {S['1인당지출_최대'] / 10000:.1f}억원입니다.",
        details="""
@@ -114,7 +116,7 @@ st.header("2. 모델이 학습한 것은 '인구'가 아니라 '오피스 밀집
 st.markdown("이 대시보드의 제목은 **인구·인프라 기반 기대소비**입니다. 그런데 정작 인구 축이 거의 작동하지 않습니다.")
 
 imp = pd.DataFrame(S["중요도"])
-figure(23, CH.bar_importance(imp),
+figure(23, RV.bar_importance(imp),
        summary="집객시설·주말유동비율·은행 수가 상위 3개입니다. 반면 상주인구는 0.006으로 사실상 0입니다. "
                "'인구 기반 기대소비'라는 프레이밍이 데이터로 뒷받침되지 않습니다.",
        details="""
@@ -128,7 +130,7 @@ figure(23, CH.bar_importance(imp),
 **"오피스 밀집도로도 설명이 안 되는 대형 결제처의 유무"** 가 됩니다.
 """)
 
-figure(24, CH.bar_coef(pd.DataFrame(S["계수"])),
+figure(24, RV.bar_coef(pd.DataFrame(S["계수"])),
        summary="주말 유동 비율 계수가 −0.31로, 절댓값 기준 2위입니다. "
                "주말에 사람이 많이 다니는 동네일수록 이 지표의 '소비'가 낮게 나옵니다.",
        details="""
@@ -168,7 +170,7 @@ table(18, "모델 성능 (GroupKFold 행정동 · out-of-fold)", perf,
 그 모델의 잔차를 유일한 정답처럼 쓰는 것은 별개의 문제입니다.
 """)
 
-figure(25, CH.bar_cut_vs_error(S["성능"][0]["MAE_log"], float(np.log(1.5))),
+figure(25, RV.bar_cut_vs_error(S["성능"][0]["MAE_log"], float(np.log(1.5))),
        summary="'초과달성/저평가' 경계는 log 0.405인데 모델의 평균 오차는 0.470입니다. "
                "경계가 오차 안에 들어가 있어, 라벨의 상당수는 기대수준과 통계적으로 구분되지 않습니다.",
        details="""
@@ -210,7 +212,7 @@ c[1].metric("동 내 분기 편차 (변동)", f"{S['잡음_동내표준편차_�
 c[2].metric("수준 × 추세 상관", f"{S['상관_수준_추세']:+.2f}",
             help="저평가 동이 따라잡는 중이라면 뚜렷한 음(−)이 나와야 합니다.")
 
-figure(26, CH.scatter_level_trend(rev, S["상관_수준_추세"]),
+figure(26, RV.scatter_level_trend(rev, S["상관_수준_추세"]),
        summary=f"잔차의 90% 이상이 시간에 따라 변하지 않는 동 고유 값입니다. "
                f"게다가 수준과 추세의 상관은 {S['상관_수준_추세']:+.2f} — 저평가 동이 격차를 좁히고 있다는 증거가 없습니다.",
        details="""

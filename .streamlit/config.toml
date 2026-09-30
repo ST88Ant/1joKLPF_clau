@@ -9,5 +9,9 @@ textColor = "#0b0b0b"
 headless = true
 runOnSave = false
 
+[client]
+# 오류를 숨기지 않는다 (내부용 대시보드 — 로그를 못 보는 팀원도 원인을 볼 수 있게)
+showErrorDetails = "full"
+
 [browser]
 gatherUsageStats = false

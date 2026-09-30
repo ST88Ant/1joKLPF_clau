@@ -11,8 +11,6 @@ P_GU_GEO = DATA / "gu_geo.parquet"
 P_GU = DATA / "gu_summary.parquet"
 P_TAGS = DATA / "tags.parquet"
 P_GAP = DATA / "biz_gap.parquet"
-P_REV = DATA / "revision.parquet"            # [수정사항] 재검증 데이터
-P_REV_STATS = DATA / "revision_stats.json"  # [수정사항] 스칼라·소형 표
 
 SEOUL_CENTER = (37.5585, 126.9900)
 

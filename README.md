@@ -144,3 +144,12 @@ python scripts/build_data.py --offline  # data/cache 에 받아 둔 파일만 �
 
 따라서 `배율`·`기회_유형`·`기회점수` 는 상권 잠재력이 아니라 **대형 결제처 소재 여부**에 가깝습니다.
 근거와 수정 방향은 [🛠️ 수정사항](https://1joklpfclau-hecsqfwbfsrupvrs8tgdml.streamlit.app/revision) 페이지에 정리했습니다.
+
+## ⚠️ 배포 시 주의 — `runOnSave = false`
+
+`.streamlit/config.toml` 에 `runOnSave = false` 라, Streamlit Cloud 는 푸시된 코드를 pull 해도
+**이미 임포트된 `src/` 모듈을 다시 읽지 않습니다.** 기존 모듈에 함수를 추가하면
+앱을 재시작하기 전까지 `AttributeError` 가 납니다.
+
+- **새 기능은 새 모듈에** 넣으세요 (예: `src/revision_view.py`). 처음 임포트되므로 안전합니다.
+- 기존 모듈(`config`·`data`·`charts`·`ui`)을 고쳤다면 **Manage app → Reboot app** 으로 재시작하세요.
