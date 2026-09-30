@@ -105,3 +105,17 @@ def group_median(by: str, cols: tuple[str, ...]) -> pd.DataFrame:
     return (_lf().filter(pl.col(by).is_not_null())
               .group_by(by).agg(pl.len().alias("동 수"), *[pl.col(c).median() for c in cols])
               .sort("동 수", descending=True).collect().to_pandas())
+
+
+# ── [수정사항] 재검증 데이터 ───────────────────────────────────────────
+@st.cache_data(show_spinner=False)
+def revision() -> pd.DataFrame:
+    """행정동 425행 — 타깃 항목 구성·1인당 지출·잔차 통계 (scripts/build_revision.py 산출)"""
+    return pd.read_parquet(C.P_REV)
+
+
+@st.cache_data(show_spinner=False)
+def revision_stats() -> dict:
+    """모델 성능·변수 중요도·순위 Top 등 스칼라와 소형 표"""
+    import json
+    return json.loads(C.P_REV_STATS.read_text(encoding="utf-8"))

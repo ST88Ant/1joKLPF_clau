@@ -6,6 +6,7 @@
 서울 25개 자치구 · 425개 행정동의 **인구·인프라 기반 기대소비 대비 실제 소비(배율)**, 소비 추세, 금융MBTI, 상권 키워드를 한곳에서 보는 Streamlit 대시보드입니다.
 
 - **기본 EDA:** 표 16개 · 그래프 19개 (모든 그래프에 마우스 오버 툴팁)
+- **🛠️ 수정사항:** 위 결론을 원본 데이터로 재검증한 결과와 수정 방향 (표 17–20 · 그림 20–26)
 - **지도:** folium + 인증키가 필요 없는 타일 (Esri 회색 지도 · OpenStreetMap)
 - **빠른 로딩:** Parquet + DuckDB(필요한 컬럼·자치구만 조회) + Polars(집계) + Streamlit 캐시
 
@@ -20,6 +21,7 @@
 | 🏠 홈 | <https://1joklpfclau-hecsqfwbfsrupvrs8tgdml.streamlit.app/> |
 | 🗺️ 상권 지도 | <https://1joklpfclau-hecsqfwbfsrupvrs8tgdml.streamlit.app/map> |
 | 🎯 기회 탐색 | <https://1joklpfclau-hecsqfwbfsrupvrs8tgdml.streamlit.app/opportunity> |
+| 🛠️ 수정사항 | <https://1joklpfclau-hecsqfwbfsrupvrs8tgdml.streamlit.app/revision> |
 
 > 한동안 접속이 없으면 앱이 잠듭니다. "Yes, get this app back up!" 버튼을 누르면 1분 안에 다시 켜집니다.
 
@@ -46,6 +48,7 @@ streamlit run app.py
 | [🗺️ 상권 지도](https://1joklpfclau-hecsqfwbfsrupvrs8tgdml.streamlit.app/map) | `pages/map.py` | 서울 전체(자치구) ↔ 선택 자치구의 행정동 지도, 클릭하면 요약 | folium |
 | [🎯 기회 탐색](https://1joklpfclau-hecsqfwbfsrupvrs8tgdml.streamlit.app/opportunity) | `pages/opportunity.py` | 선점형·유출보완형 Top 10, 조건 필터, CSV 내려받기 | 표 13–16 |
 | [🔍 행정동 상세](https://1joklpfclau-hecsqfwbfsrupvrs8tgdml.streamlit.app/dong_detail) | `pages/dong_detail.py` | 한 동의 키워드 · 업종 · 모델 결과 프로필 | – |
+| [🛠️ 수정사항](https://1joklpfclau-hecsqfwbfsrupvrs8tgdml.streamlit.app/revision) | `pages/revision.py` | **결론 재검증** — 타깃 진단 · 모델이 학습한 것 · 라벨/금액 오류 · 수정 방향 | 표 17–20 · 그림 20–26 |
 
 ## 폴더 구조
 
@@ -61,7 +64,8 @@ streamlit run app.py
 │  ├─ maps.py              folium 지도 빌더
 │  └─ ui.py                번호 붙은 표·그림 블록
 ├─ scripts/
-│  └─ build_data.py        CSV + 행정동 경계 → Parquet 전처리
+│  ├─ build_data.py        CSV + 행정동 경계 → Parquet 전처리
+│  └─ build_revision.py   [수정사항] 재검증 데이터 (원본 소비·상주인구 + 모델 산출물)
 ├─ data/
 │  ├─ raw/                 서울시_행정동별_상권분석_통합.csv (원본)
 │  ├─ processed/           대시보드가 읽는 Parquet 6개 (약 220 KB, 저장소에 포함)
@@ -90,6 +94,7 @@ python scripts/build_data.py --offline  # data/cache 에 받아 둔 파일만 �
 | `gu_summary.parquet` | 자치구 요약 지표 |
 | `tags.parquet` | 키워드 태그 long 테이블 |
 | `biz_gap.parquet` | 업종 공백·강점 long 테이블 |
+| `revision.parquet` · `revision_stats.json` | [수정사항] 재검증용 — `python scripts/build_revision.py` 로 따로 만듦 |
 
 **경계 코드 보정:** 데이터(2025 행정동 체계)와 경계(2025-12) 사이에 바뀐 3개 동을 맞췄습니다 — 개포3동 → 일원2동(명칭 변경), 상일1·2동 → 상일동, 신설동·용두동 → 용신동(분동 전으로 병합).
 
@@ -127,3 +132,15 @@ python scripts/build_data.py --offline  # data/cache 에 받아 둔 파일만 �
 - SKT 서울 시민생활 데이터 (청년·1인가구 비율)
 - apt.wiki 단지 키워드 (정성 키워드)
 - 행정동 경계: 행정안전부, [vuski/admdongkor](https://github.com/vuski/admdongkor)
+
+## ⚠️ 타깃 해석 주의
+
+타깃으로 쓴 `OA-22166 지출_총금액` 은 **카드 결제가 가맹점·법인 주소지에 계상된 값**입니다.
+그 동네 주민이 쓴 돈도, 그 동네 상가의 매출도 아닙니다.
+
+- 여가·문화 한 항목이 서울 전체 지출의 **64%** (2025Q4)
+- 상위 3개 동(소공동·구로3동·문래동)이 전체의 **45%**
+- 상주인구 1인당 분기 지출 중앙값 **21만원**(월 7만원)
+
+따라서 `배율`·`기회_유형`·`기회점수` 는 상권 잠재력이 아니라 **대형 결제처 소재 여부**에 가깝습니다.
+근거와 수정 방향은 [🛠️ 수정사항](https://1joklpfclau-hecsqfwbfsrupvrs8tgdml.streamlit.app/revision) 페이지에 정리했습니다.

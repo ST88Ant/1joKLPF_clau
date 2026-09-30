@@ -27,6 +27,9 @@ pages = {
         st.Page("pages/opportunity.py", title="기회 탐색", icon="🎯"),
         st.Page("pages/dong_detail.py", title="행정동 상세", icon="🔍"),
     ],
+    "검증": [
+        st.Page("pages/revision.py", title="수정사항", icon="🛠️"),
+    ],
 }
 
 st.navigation(pages).run()
