@@ -14,11 +14,16 @@ def header(title: str, caption: str) -> None:
     st.caption(caption)
 
 
-def figure(no: int, fig, note: str | None = None) -> None:
+def figure(no: int, fig, note: str | None = None, summary: str | None = None, details: str | None = None) -> None:
     st.markdown(f"**그림 {no}.**")
     st.plotly_chart(fig, width="stretch", config=PLOT_CONFIG)
-    if note:
+    if summary:
+        st.info(f"💡 **3초 핵심 요약**: {summary}")
+    elif note:
         st.caption(note)
+    if details:
+        with st.expander("🔍 [상세보기] 쉬운 해설과 상권 분석 이야기"):
+            st.markdown(details)
 
 
 def table(no: int, title: str, df: pd.DataFrame, note: str | None = None, fmt: dict | None = None,
